@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中草药连连看 - 游戏界面</title>
+    <link rel="stylesheet" href="css/style.css">
+    <audio id="matchSound" preload="auto" src="assets/sounds/match.mp3"></audio>
+    <audio id="hintSound" preload="auto" src="assets/sounds/hint.mp3"></audio>
+    <audio id="successSound" preload="auto" src="assets/sounds/success.mp3"></audio>
+    <audio id="failSound" preload="auto" src="assets/sounds/fail.mp3"></audio>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="score">分数: <span id="score">0</span></div>
+            <div class="timer">时间: <span id="timer">60</span></div>
+            <div class="audio-controls">
+                <button id="muteBtn" class="icon-btn">🔊</button>
+                <div class="volume-control">
+                    <input type="range" id="volumeSlider" min="0" max="100" value="50">
+                    <span id="volumeValue">50%</span>
+                </div>
+            </div>
+            <button id="hint-btn">提示</button>
+        </div>
+        
+        <div class="game-board-container">
+            <div class="game-board" id="gameBoard"></div>
+            <canvas id="lineCanvas" class="line-canvas"></canvas>
+        </div>
+        
+        <div class="game-menu">
+            <button id="start-btn">开始游戏</button>
+            <button id="settings-btn">设置</button>
+            <button id="credits-btn">鸣谢</button>
+            <button id="about-btn">关于</button>
+        </div>
+    </div>
+
+    <script>
+        // 添加鸣谢和关于面板的显示函数
+        document.getElementById('credits-btn').addEventListener('click', showCredits);
+        document.getElementById('about-btn').addEventListener('click', showAbout);
+
+        function showCredits() {
+            const creditsPanel = document.createElement('div');
+            creditsPanel.className = 'settings-panel';
+            creditsPanel.innerHTML = `
+                <div class="settings-content credits-content">
+                    <h2>鸣谢</h2>
+                    <div class="credits-text">
+                        <p class="credits-message">亲爱的药缘君：</p>
+                        <p>鸣谢每一位"药缘君"的热情支持与深厚陪伴。是你们的智慧与热爱，让中草药连连看焕发生机。感谢你们一路同行，共探药韵之美！</p>
+                        <p class="credits-signature">花无多</p>
+                    </div>
+                    <button id="closeCredits" class="close-btn">关闭</button>
+                </div>
+            `;
+            document.body.appendChild(creditsPanel);
+
+            document.getElementById('closeCredits').addEventListener('click', () => {
+                creditsPanel.remove();
+            });
+        }
+
+        function showAbout() {
+            const aboutPanel = document.createElement('div');
+            aboutPanel.className = 'settings-panel';
+            aboutPanel.innerHTML = `
+                <div class="settings-content about-content">
+                    <h2>制作团队</h2>
+                    <div class="team-list">
+                        <div class="team-section">
+                            <h3>策划组</h3>
+                            <p>游戏主策划：花无多</p>
+                            <p>副策划：秦森森</p>
+                            <p>项目统筹：混元元宝</p>
+                        </div>
+                        <div class="team-section">
+                            <h3>美术组</h3>
+                            <p>主画师：即梦Ai</p>
+                        </div>
+                        <div class="team-section">
+                            <h3>音乐组</h3>
+                            <p>音乐制作：海绵音乐Ai</p>
+                        </div>
+                        <div class="team-section">
+                            <h3>技术组</h3>
+                            <p>主程序：Cursor</p>
+                        </div>
+                        <div class="team-section">
+                            <h3>气氛组</h3>
+                            <p>TPB、LAQ、ZCZ、FXD 等</p>
+                        </div>
+                    </div>
+                    <button id="closeAbout" class="close-btn">关闭</button>
+                </div>
+            `;
+            document.body.appendChild(aboutPanel);
+
+            document.getElementById('closeAbout').addEventListener('click', () => {
+                aboutPanel.remove();
+            });
+        }
+    </script>
+
+    <style>
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .settings-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            font-family: 'YouYuan', 'STHupo', 'Microsoft YaHei', sans-serif;
+        }
+
+        .credits-content, .about-content {
+            max-width: 600px;
+            text-align: left;
+        }
+
+        .credits-text {
+            margin: 20px 0;
+            line-height: 1.8;
+            color: #5C3317;
+            padding: 20px;
+            background: rgba(139, 69, 19, 0.1);
+            border-radius: 10px;
+        }
+
+        .credits-message {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #8B4513;
+            font-weight: bold;
+        }
+
+        .credits-signature {
+            text-align: right;
+            margin-top: 15px;
+            font-style: italic;
+            color: #8B4513;
+        }
+
+        .team-list {
+            margin: 20px 0;
+        }
+
+        .team-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(139, 69, 19, 0.1);
+            border-radius: 10px;
+        }
+
+        .team-section h3 {
+            color: #8B4513;
+            margin-bottom: 10px;
+            font-size: 18px;
+            border-bottom: 2px solid rgba(139, 69, 19, 0.2);
+            padding-bottom: 5px;
+        }
+
+        .team-section p {
+            margin: 8px 0;
+            color: #5C3317;
+            font-size: 16px;
+        }
+
+        .close-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #8B4513;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #A0522D;
+        }
+    </style>
+
+    <script src="js/herbs.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html> 
